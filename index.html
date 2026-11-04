@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>РЕЗОНАНС — Дуэль Потоков</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23070b14'/><path d='M16 4 L27 10 L27 22 L16 28 L5 22 L5 10 Z' fill='none' stroke='%2335f0d0' stroke-width='2.5'/><circle cx='16' cy='16' r='4' fill='%23ff4d9d'/></svg>">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══════════════ ГЛАВНОЕ МЕНЮ ══════════════ -->
+  <section id="scr-menu" class="screen active">
+    <canvas id="menu-bg"></canvas>
+    <div class="menu-inner">
+      <div class="logo-block">
+        <div class="logo-hex">◈</div>
+        <h1 class="logo">РЕЗОНАНС<span class="logo-cursor">_</span></h1>
+        <div class="subtitle">ДУЭЛЬ&nbsp;ПОТОКОВ&nbsp;·&nbsp;ПРОТОКОЛ&nbsp;ТЕССИТА</div>
+      </div>
+      <nav class="menu-btns">
+        <button class="mb primary" data-go="campaign"><span class="mb-ico">▣</span><span>КАМПАНИЯ</span><small>36 миссий · сюжет</small></button>
+        <button class="mb" data-go="duel"><span class="mb-ico">⚔</span><span>ДУЭЛЬ</span><small>поединок с ИИ</small></button>
+        <button class="mb" data-go="online"><span class="mb-ico">⇄</span><span>ОНЛАЙН</span><small>рейтинг · лобби · топы</small></button>
+        <button class="mb" data-go="arcade"><span class="mb-ico">✦</span><span>АРКАДА</span><small>6 режимов</small></button>
+        <button class="mb" data-go="codex"><span class="mb-ico">▤</span><span>КОДЕКС</span><small>правила · юниты · лор</small></button>
+        <button class="mb" data-go="achieve"><span class="mb-ico">★</span><span>ДОСТИЖЕНИЯ</span><small id="ach-counter">0 / 24</small></button>
+        <button class="mb" data-go="settings"><span class="mb-ico">⚙</span><span>НАСТРОЙКИ</span><small>звук · вид · профиль</small></button>
+      </nav>
+      <div class="menu-foot">
+        <div class="profile-chip" id="menu-profile">
+          <span class="pc-rank" id="pc-rank">НОВИЧОК</span>
+          <span class="pc-name" id="pc-name">Оператор</span>
+          <span class="pc-elo" id="pc-elo">1200</span>
+        </div>
+        <div class="menu-links">
+          <button class="link" data-go="codex-lore">История ТЕССИТА</button>
+          <a class="link" href="https://github.com/ritmiro1/Game3" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ КАМПАНИЯ ══════════════ -->
+  <section id="scr-campaign" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>КАМПАНИЯ · ПРОТОКОЛ ЯДРА</h2>
+      <div class="head-right"><span class="stars-total" id="camp-stars">★ 0 / 108</span></div>
+    </header>
+    <div class="sector-tabs" id="sector-tabs"></div>
+    <div class="mission-grid" id="camp-grid"></div>
+    <div class="sector-lore" id="sector-lore"></div>
+  </section>
+
+  <!-- ══════════════ ДУЭЛЬ ══════════════ -->
+  <section id="scr-duel" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>ДУЭЛЬ С ПРОТОКОЛОМ</h2>
+      <div class="head-right"></div>
+    </header>
+    <div class="two-col">
+      <div class="panel">
+        <h3>СЛОЖНОСТЬ</h3>
+        <div class="level-cards" id="level-cards"></div>
+      </div>
+      <div class="panel">
+        <h3>ПОЛЕ</h3>
+        <div class="map-pick" id="duel-maps"></div>
+        <h3 style="margin-top:18px">ЛИЧНОСТЬ СОПЕРНИКА</h3>
+        <div class="style-pick" id="style-pick"></div>
+        <button class="big-btn" id="duel-start">НАЧАТЬ ДУЭЛЬ ▸</button>
+        <div class="hint-line" id="duel-hint">Оракул играет на бюджете90 тыс. узлов — это глубина6-7 полуходов.</div>
+      </div>
+    </div>
+    <div class="panel wide">
+      <h3>ЛЕСТНИЦА ПРОТОКОЛОВ <small>—12 соперников с характером и рейтингом</small></h3>
+      <div class="ladder-row" id="ladder-row"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════ АРКАДА ══════════════ -->
+  <section id="scr-arcade" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>АРКАДА</h2>
+      <div class="head-right"></div>
+    </header>
+    <div class="arcade-grid" id="arcade-grid"></div>
+  </section>
+
+  <!-- ══════════════ ОНЛАЙН ══════════════ -->
+  <section id="scr-online" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>ОНЛАЙН-ДУЭЛИ</h2>
+      <div class="head-right"><span class="net-dot" id="net-dot"></span><span id="net-status">отключено</span></div>
+    </header>
+    <div class="online-tabs" id="online-tabs">
+      <button class="otab active" data-otab="play">ДУЭЛЬ</button>
+      <button class="otab" data-otab="rooms">КОМНАТЫ</button>
+      <button class="otab" data-otab="top">РЕЙТИНГ</button>
+    </div>
+
+    <div class="otab-page active" id="otab-play">
+      <div class="two-col">
+        <div class="panel profile-panel">
+          <h3>ПРОФИЛЬ ОПЕРАТОРА</h3>
+          <div class="nick-row">
+            <input id="nick-input" maxlength="20" placeholder="никнейм" spellcheck="false">
+            <button id="nick-save">ОК</button>
+          </div>
+          <div class="elo-big" id="prof-elo">1200</div>
+          <div class="rank-name" id="prof-rank">НОВИЧОК</div>
+          <div class="prof-stats" id="prof-stats">0 побед · 0 поражений · 0 ничьих</div>
+          <div class="prof-best" id="prof-best">рекорд: 1200</div>
+        </div>
+        <div class="panel">
+          <h3>БЫСТРЫЙ МАТЧ</h3>
+          <div class="mode-row" id="online-modes">
+            <button class="mode-chip active" data-mode="standard">СТАНДАРТ ·7×7</button>
+            <button class="mode-chip" data-mode="chaos">ХАОС · случайная карта</button>
+            <button class="mode-chip" data-mode="rush">БЫСТРЫЙ ·5×5</button>
+          </div>
+          <button class="big-btn glow" id="btn-quick">НАЙТИ СОПЕРНИКА ▸</button>
+          <div class="or-line">— или —</div>
+          <div class="room-actions">
+            <button class="mid-btn" id="btn-create">СОЗДАТЬ КОМНАТУ</button>
+            <div class="join-row">
+              <input id="join-code" maxlength="5" placeholder="КОД" spellcheck="false">
+              <button class="mid-btn" id="btn-join">ВОЙТИ</button>
+            </div>
+          </div>
+          <div class="hint-line">Матч идёт за рейтинг ELO. Ничья слегка сближает рейтинги. Таймаут хода —60 секунд.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="otab-page" id="otab-rooms">
+      <div class="panel wide">
+        <div class="rooms-head">
+          <h3>ОТКРЫТЫЕ КОМНАТЫ</h3>
+          <button class="mid-btn" id="rooms-refresh">Обновить</button>
+        </div>
+        <div class="room-list" id="room-list"><div class="empty">Комнат пока нет — создайте свою!</div></div>
+      </div>
+    </div>
+
+    <div class="otab-page" id="otab-top">
+      <div class="panel wide">
+        <h3>ТАБЛИЦА ЛИДЕРОВ <small>— живые операторы ТЕССИТА</small></h3>
+        <div class="top-table" id="top-table"><div class="empty">Пока пусто. Будьте первым!</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ИГРА ══════════════ -->
+  <section id="scr-game" class="screen">
+    <div class="game-layout">
+      <div class="hud hud-top">
+        <div class="player-card" id="card-opp">
+          <div class="pc-color c1"></div>
+          <div class="pc-body">
+            <div class="pc-top"><span class="p-name" id="opp-name">Соперник</span><span class="p-elo" id="opp-elo"></span></div>
+            <div class="pc-sub"><span class="charge-pips" id="opp-charge"></span><span class="p-units" id="opp-units"></span></div>
+          </div>
+          <div class="think-dots" id="opp-think"><i></i><i></i><i></i></div>
+        </div>
+        <div class="round-block">
+          <div class="round-num" id="round-num">РАУНД 1</div>
+          <div class="round-sub" id="round-sub">стандарт</div>
+          <div class="shrink-warn" id="shrink-warn"></div>
+        </div>
+        <div class="hud-btns">
+          <button class="hbtn" id="btn-hint" title="Подсказка (H)">◉</button>
+          <button class="hbtn" id="btn-emote" title="Эмоции (E)">☺</button>
+          <button class="hbtn danger" id="btn-resign" title="Сдаться">⚑</button>
+          <button class="hbtn" id="btn-leave" title="В меню (Esc)">✕</button>
+        </div>
+      </div>
+
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="game-canvas"></canvas>
+        <div class="flow-banner" id="flow-banner">ФАЗА ПОТОКА</div>
+        <div class="shrink-banner" id="shrink-banner">ПЕРИМЕТР СЖИМАЕТСЯ</div>
+        <div class="waiting-overlay" id="waiting-overlay" hidden>
+          <div class="wait-box"><div class="spinner"></div><div id="wait-text">Соперник думает…</div></div>
+        </div>
+      </div>
+
+      <div class="hud hud-bottom">
+        <div class="player-card me" id="card-me">
+          <div class="pc-color c0"></div>
+          <div class="pc-body">
+            <div class="pc-top"><span class="p-name" id="me-name">Вы</span><span class="p-elo" id="me-elo"></span></div>
+            <div class="pc-sub"><span class="charge-pips" id="me-charge"></span><span class="p-units" id="me-units"></span></div>
+          </div>
+        </div>
+        <div class="action-hint" id="action-hint">Выберите юнита</div>
+        <div class="imp-toggle" id="imp-toggle" title="Режим импульса: толчок на2 клетки, игнорирует броню (−1 заряд)">
+          <span class="imp-ico">↯</span><span id="imp-label">ИМПУЛЬС: ВЫКЛ</span>
+        </div>
+      </div>
+
+      <div class="timer-bar" id="timer-bar" hidden><div id="timer-fill"></div></div>
+
+      <div class="emote-wheel" id="emote-wheel" hidden></div>
+      <div class="game-log" id="game-log"></div>
+    </div>
+
+    <!-- модалка результата -->
+    <div class="modal-back" id="result-modal" hidden>
+      <div class="modal result-box">
+        <div class="result-ico" id="result-ico">◈</div>
+        <div class="result-title" id="result-title">ПОБЕДА</div>
+        <div class="result-sub" id="result-sub"></div>
+        <div class="result-stars" id="result-stars" hidden></div>
+        <div class="result-rating" id="result-rating" hidden></div>
+        <div class="result-actions" id="result-actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ КОДЕКС ══════════════ -->
+  <section id="scr-codex" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>КОДЕКС</h2>
+      <div class="head-right"></div>
+    </header>
+    <div class="online-tabs" id="codex-tabs">
+      <button class="otab active" data-ctab="rules">ПРАВИЛА</button>
+      <button class="otab" data-ctab="units">ЮНИТЫ И КЛЕТКИ</button>
+      <button class="otab" data-ctab="lore">ИСТОРИЯ</button>
+      <button class="otab" data-ctab="controls">УПРАВЛЕНИЕ</button>
+    </div>
+    <div class="otab-page active" id="ctab-rules"><div class="codex-list" id="codex-rules"></div></div>
+    <div class="otab-page" id="ctab-units"><div class="codex-units" id="codex-units"></div></div>
+    <div class="otab-page" id="ctab-lore"><div class="codex-lore" id="codex-lore"></div></div>
+    <div class="otab-page" id="ctab-controls">
+      <div class="codex-list">
+        <div class="cx-item"><b>ЛКМ</b><span>выбрать юнита → выбрать клетку (шаг) или цель (толчок)</span></div>
+        <div class="cx-item"><b>H</b><span>подсказка — лучший ход за вас</span></div>
+        <div class="cx-item"><b>E</b><span>колесо эмоций (в онлайне)</span></div>
+        <div class="cx-item"><b>Esc</b><span>снять выбор / назад</span></div>
+        <div class="cx-item"><b>↯ кнопка</b><span>режим импульса: толчок вдвойне и сквозь броню, −1 заряд</span></div>
+        <div class="cx-item"><b>Цель</b><span>уничтожить вражеское Ядро шлифовкой об стену</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ДОСТИЖЕНИЯ ══════════════ -->
+  <section id="scr-achieve" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>ДОСТИЖЕНИЯ</h2>
+      <div class="head-right"><span id="ach-count">0 / 24</span></div>
+    </header>
+    <div class="ach-grid" id="ach-grid"></div>
+  </section>
+
+  <!-- ══════════════ НАСТРОЙКИ ══════════════ -->
+  <section id="scr-settings" class="screen">
+    <header class="scr-head">
+      <button class="back" data-go="menu">← МЕНЮ</button>
+      <h2>НАСТРОЙКИ</h2>
+      <div class="head-right"></div>
+    </header>
+    <div class="two-col">
+      <div class="panel">
+        <h3>ЗВУК</h3>
+        <label class="slider-row"><span>Эффекты</span><input type="range" id="set-sfx" min="0" max="100"><b id="val-sfx">80</b></label>
+        <label class="slider-row"><span>Музыка</span><input type="range" id="set-music" min="0" max="100"><b id="val-music">50</b></label>
+        <label class="check-row"><input type="checkbox" id="set-sound-on"><span>Звук включён</span></label>
+        <h3 style="margin-top:22px">ВИД</h3>
+        <label class="slider-row"><span>Скорость анимаций</span><input type="range" id="set-speed" min="60" max="200" step="10"><b id="val-speed">100%</b></label>
+        <label class="check-row"><input type="checkbox" id="set-shake"><span>Тряска экрана</span></label>
+        <label class="check-row"><input type="checkbox" id="set-hints"><span>Подсвечивать доступные ходы</span></label>
+      </div>
+      <div class="panel">
+        <h3>ПРОФИЛЬ</h3>
+        <div class="nick-row">
+          <input id="set-nick" maxlength="20" placeholder="никнейм" spellcheck="false">
+          <button id="set-nick-save">СОХРАНИТЬ</button>
+        </div>
+        <div class="hint-line">Никнейм — ваш вход в онлайне (сохраняется на этом устройстве).</div>
+        <h3 style="margin-top:22px">ПРОГРЕСС</h3>
+        <div class="prof-stats" id="set-progress"></div>
+        <div class="room-actions" style="margin-top:14px">
+          <button class="mid-btn danger" id="set-reset">СБРОСИТЬ ПРОГРЕСС</button>
+        </div>
+        <h3 style="margin-top:22px">О ИГРЕ</h3>
+        <div class="hint-line">РЕЗОНАНС v1.0 · движок, ИИ и сервер написаны с нуля.<br>
+        Исходники: <a href="https://github.com/ritmiro1/Game3" target="_blank" rel="noopener">github.com/ritmiro1/Game3</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ БРИФИНГ МИССИИ (модалка) ══════════════ -->
+  <div class="modal-back" id="brief-modal" hidden>
+    <div class="modal brief-box">
+      <div class="brief-sector" id="brief-sector">СЕКТОР I</div>
+      <div class="brief-name" id="brief-name">Миссия</div>
+      <div class="brief-text" id="brief-text"></div>
+      <div class="brief-stars" id="brief-stars"></div>
+      <div class="brief-tips" id="brief-tips"></div>
+      <div class="brief-meta" id="brief-meta"></div>
+      <div class="result-actions">
+        <button class="mid-btn" id="brief-close">НАЗАД</button>
+        <button class="big-btn" id="brief-start">В БОЙ ▸</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- тосты -->
+  <div id="toasts"></div>
+</div>
+
+<script src="js/engine.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/content.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/render.js"></script>
+<script src="js/net.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

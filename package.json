@@ -1,0 +1,28 @@
+{
+  "name": "game3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ritmiro1/Game3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ritmiro1/Game3/issues"
+  },
+  "homepage": "https://github.com/ritmiro1/Game3#readme",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.1.0",
+    "electron": "^45.2.2",
+    "jsdom": "^30.1.3"
+  },
+  "devDependencies": {
+    "postject": "^1.0.0-alpha.6"
+  }
+}
